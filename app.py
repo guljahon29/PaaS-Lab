@@ -1,24 +1,36 @@
 
+import os
+import psycopg
+from dotenv import load_dotenv
 from flask import Flask, render_template, request, redirect
-import sqlite3
+
+load_dotenv()
 
 app = Flask(__name__)
+app.secret_key = os.getenv('SECRET_KEY', 'local-secret-key')
+
 
 def get_db():
-    conn = sqlite3.connect('students.db')
-    return conn
+    return psycopg.connect(os.getenv('DATABASE_URL'))
+
 
 @app.route('/')
 def home():
-    conn = get_db()
-    students = conn.execute('SELECT * FROM students').fetchall()
+    with get_db() as conn:
+        students = conn.execute(
+            'SELECT id, name, group_name, subject, score FROM students ORDER BY id'
+        ).fetchall()
+
     total = len(students)
     average = sum(s[4] for s in students) / total if total else 0
-    conn.close()
-    return render_template('index.html',
-                           students=students,
-                           total=total,
-                           average=average)
+
+    return render_template(
+        'index.html',
+        students=students,
+        total=total,
+        average=average
+    )
+
 
 @app.route('/add_student', methods=['GET', 'POST'])
 def add_student():
@@ -28,26 +40,33 @@ def add_student():
         subject = request.form['subject']
         score = int(request.form['score'])
 
-        conn = get_db()
-        conn.execute(
-            'INSERT INTO students (name, group_name, subject, score) VALUES (?, ?, ?, ?)',
-            (name, group, subject, score)
-        )
-        conn.commit()
-        conn.close()
+        with get_db() as conn:
+            conn.execute(
+                '''INSERT INTO students
+                   (name, group_name, subject, score)
+                   VALUES (%s, %s, %s, %s)''',
+                (name, group, subject, score)
+            )
+
         return redirect('/')
 
     return render_template('add_student.html')
 
+
+def init_db():
+    with get_db() as conn:
+        conn.execute('''
+            CREATE TABLE IF NOT EXISTS students (
+                id SERIAL PRIMARY KEY,
+                name TEXT,
+                group_name TEXT,
+                subject TEXT,
+                score INTEGER
+            )
+        ''')
+
+
 if __name__ == '__main__':
-    conn = get_db()
-    conn.execute('''CREATE TABLE IF NOT EXISTS students (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT,
-        group_name TEXT,
-        subject TEXT,
-        score INTEGER
-    )''')
-    conn.commit()
-    conn.close()
+    init_db()
     app.run(debug=True)
+

@@ -80,7 +80,6 @@ def edit_student(student_id):
             return redirect('/')
 
     return render_template('edit_student.html', student=student)
-
 def init_db():
     with get_db() as conn:
         conn.execute('''

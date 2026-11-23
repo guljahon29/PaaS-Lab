@@ -21,22 +21,32 @@
         <section>
             <h2>Talabalar ro‘yxati</h2>
             {% if students %}
-            <table border="1">
-                <tr>
-                    <th>ID</th><th>F.I.Sh.</th><th>Guruh</th>
-                    <th>Fan</th><th>Ball</th>
-                </tr>
-                {% for s in students %}
-                <tr>
-                    <td>{{ s[0] }}</td>
-                    <td>{{ s[1] }}</td>
-                    <td>{{ s[2] }}</td>
-                    <td>{{ s[3] }}</td>
-                    <td>{{ s[4] }}/100</td>
-                </tr>
-                {% endfor %}
-            </table>
-            {% else %}
+
+<table border="1">
+    <tr>
+        <th>ID</th>
+        <th>F.I.Sh.</th>
+        <th>Guruh</th>
+        <th>Fan</th>
+        <th>Ball</th>
+        <th>Amallar</th>
+    </tr>
+
+    {% for s in students %}
+    <tr>
+        <td>{{ s[0] }}</td>
+        <td>{{ s[1] }}</td>
+        <td>{{ s[2] }}</td>
+        <td>{{ s[3] }}</td>
+        <td>{{ s[4] }}/100</td>
+        <td>
+            <a href="{{ url_for('edit_student', student_id=s[0]) }}">Tahrirlash</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+                        {% else %}
             <p>Hozircha talaba kiritilmagan.</p>
             {% endif %}
         </section>

@@ -1,0 +1,29 @@
+
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <title>Talabani tahrirlash</title>
+</head>
+<body>
+    <h1>Talaba ma’lumotlarini tahrirlash</h1>
+
+    <form method="POST">
+        <label>Ism familiya:</label><br>
+        <input type="text" name="name" value="{{ student[1] }}" required><br><br>
+
+        <label>Guruh:</label><br>
+        <input type="text" name="group" value="{{ student[2] }}" required><br><br>
+
+        <label>Fan:</label><br>
+        <input type="text" name="subject" value="{{ student[3] }}" required><br><br>
+
+        <label>Ball:</label><br>
+        <input type="number" name="score" value="{{ student[4] }}" min="0" max="100" required><br><br>
+
+        <button type="submit">Saqlash</button>
+    </form>
+
+    <a href="/">Orqaga</a>
+</body>
+</html>
